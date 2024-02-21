@@ -17,12 +17,20 @@ class LoginController extends Controller
 
     function login(Request $request)
 {
-    $login = $request->validate([
-        'username' => 'required',
-        'password' => 'required',
+    $logintype = filter_var($request->input('email_or_username'), FILTER_VALIDATE_EMAIL)? 'email' : 'username';
+
+
+    $request->validate([
+        'email_or_username' => 'required|string|max:255',
+        'password' => 'required|string|min:6',
     ]);
+
+        $infologin = [
+            $logintype => $request->input('email_or_username'),
+            'password' => $request->input('password')
+        ];
         // Metode ini menangani proses login. Pertama, validasi dilakukan terhadap input email dan password. Jika validasi berhasil, Auth::attempt() digunakan untuk mencoba proses otentikasi. Jika otentikasi berhasil, user diarahkan ke halaman '/siswa',
-        if(Auth::attempt($login) ){
+        if(Auth::attempt($infologin)){
             $request->session()->regenerate();
             return redirect()->intended('/siswa')->with('success', 'Anda berhasil login');
         }
@@ -38,33 +46,40 @@ class LoginController extends Controller
 
     function create(Request $request)
     {
-         // Nah, fungsi ini nangani proses bikin user baru (registrasi).
-
-          // Validasi dulu input dari form registrasi.
+        // Nah, fungsi ini nangani proses bikin user baru (registrasi).
+    
+        // Validasi dulu input dari form registrasi.
         $request->validate([
-            'name'=>'required',
-            'username'=>'required|unique:users,username',
-            'password'=>'required|min:6'
-        ],[
-            'name.required'=>'nama wajib diisi',
-            'username.required'=>'username wajib diisi',
-            'username.unique'=>'username ini sudah adaa',
-            'password.required'=>'Password wajib diisi',
-            'password.min' => 'password yang di perbolehkan hanya 6 karakter',
+            'name' => 'required',
+            'username' => 'required|unique:users,username',
+            'email' => 'required|email:dns|unique:users',
+            'password' => 'required|min:6'
+        ], [
+            'name.required' => 'Nama wajib diisi',
+            'username.required' => 'Username wajib diisi',
+            'username.unique' => 'Username ini sudah ada',
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Email tidak valid',
+            'email.unique' => 'Email ini sudah ada',
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal harus 6 karakter',
         ]);
-
-         // buat data user baru, yang diambil dari form registrasi.
+    
+        // Buat data user baru, yang diambil dari form registrasi.
         $data = [
             'name' => $request->name,
             'username' => $request->username,
-            'password' =>Hash::make($request->password)
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
         ];
-          // Bikin user baru dan disimpen ke database.
+    
+        // Bikin user baru dan disimpan ke database.
         User::create($data);
-
-          // Diarahin ke halaman 'siswa' dengan pesan sukses.
-        return redirect('siswa')->with('success', 'Data berhasil di tambah kan');
+    
+        // Diarahkan ke halaman 'siswa' dengan pesan sukses.
+        return redirect('siswa')->with('success', 'Data berhasil ditambahkan');
     }
+    
 
     public function logout(Request $request)
     {

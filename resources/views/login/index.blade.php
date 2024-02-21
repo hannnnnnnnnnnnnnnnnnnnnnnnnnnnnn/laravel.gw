@@ -34,9 +34,9 @@
                         <form action="{{ url('/login') }}" method="post">
                             @csrf
                             <div class="mb-3">
-                                <label for="username" class="form-label">UserName:</label>
-                                <input type="text" placeholder="Masukkan Username" class="form-control  @error('username') is-invalid @enderror" name='username'  required autofocus  value="{{ old('username') }}">
-                                    @error('username')
+                                <label for="email_or_username" class="form-label">Email/UserName:</label>
+                                <input type="text" placeholder="Masukkan Email/Username" class="form-control  @error('email_or_username') is-invalid @enderror" name='email_or_username'  required autofocus  value="{{ old('email_or_username') }}">
+                                    @error('email_or_username')
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror
                             </div>
