@@ -35,7 +35,7 @@ class LoginController extends Controller
             return redirect()->intended('/siswa')->with('success', 'Anda berhasil login');
         }
         // dan jika otentikasi gagal, user dikembalikan ke halaman sebelumnya dengan pesan kesalahan.
-        return back()->with('loginError', 'login valid!!');
+        return back()->with('loginError', 'Ada kesalahan !!');
 }
 
     public function register(Request $request)
